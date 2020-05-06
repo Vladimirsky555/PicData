@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/addFolder.png</file>
+        <file>images/addPic.png</file>
+        <file>images/deleteFolder.png</file>
+        <file>images/delPic.png</file>
+        <file>images/openViewer.png</file>
+        <file>images/plusMany.png</file>
+        <file>images/showAllTable.png</file>
+        <file>images/showPic.png</file>
+        <file>images/addToDB.png</file>
+    </qresource>
+</RCC>
