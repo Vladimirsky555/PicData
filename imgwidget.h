@@ -10,6 +10,7 @@
 #include "worker.h"
 #include "model.h"
 #include "counter.h"
+#include "data_pic.h"
 
 namespace Ui {
 class ImgWidget;
@@ -21,7 +22,7 @@ class ImgWidget : public QWidget
 
     QThread m_thread;
     ImgLoader *imgLoader;
-    QList<QByteArray> dataForShow;
+    QList<Data_pic*> dataForShow;
     QList<QWidget*> widgets;
     QStringList fileNameList;
     Worker *worker;
@@ -33,7 +34,7 @@ public:
 
     void setWorker(Worker *);
     void setFolder(QString folder);
-    void acceptDataForShow(QList<QByteArray> arr);
+    void acceptDataForShow(QList<Data_pic*> pix);
 
 private slots:
     void on_btnAddList_clicked();//просмотр из файловой системы

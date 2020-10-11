@@ -62,10 +62,6 @@ void MainWindow::refreshListFolders()
 
 void MainWindow::setupModel(const QString &tableName, const QStringList &headers)
 {
-    /* Производим инициализацию модели представления данных
-         * с установкой имени таблицы в базе данных, по которому
-         * будет производится обращение в таблице
-         * */
         model = new Model(this);
 
         connect(this, SIGNAL(shutdown()),
@@ -80,19 +76,12 @@ void MainWindow::setupModel(const QString &tableName, const QStringList &headers
         connect(model, SIGNAL(add_folder()),
                 this, SLOT(refresh_folders()));
 
-        connect(model, SIGNAL(delete_row()),
-                this, SLOT(delete_row()));
-
         connect(model, SIGNAL(delete_folder()),
                 this, SLOT(refresh_folders()));
 
-//        connect(model, SIGNAL(rename_folder()),
-//                this, SLOT(refresh_folders()));
 
         model->setTable(tableName);
 
-        /* Устанавливаем названия колонок в таблице с сортировкой данных
-         * */
         for(int i = 0, j = 0; i < model->columnCount(); i++, j++){
             model->setHeaderData(i,Qt::Horizontal,headers[j]);
         }
@@ -109,15 +98,15 @@ void MainWindow::createUI()
     ui->listWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     ui->tableView->setColumnHidden(0, true);
+    ui->tableView->setColumnHidden(1, true);
     ui->tableView->setColumnHidden(3, true);
+
+    ui->tableView->setAlternatingRowColors(true);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableView->resizeColumnsToContents();
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableView->horizontalHeader()->setStretchLastSection(true);
-    connect(ui->tableView->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
-            this, SLOT(slotCurrentPic(QModelIndex)));
-//    model->select();
 }
 
 
@@ -129,7 +118,8 @@ void MainWindow::on_actionAddOne_triggered()
         return;
     }
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "C:/picDB/", tr("Images (*.png *.xpm *.jpg)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
+                                                    tr("Images (*.png *.xpm *.jpg)"));
     QPixmap inixmap(fileName);
     QByteArray inByteArray;
     QBuffer inBuffer(&inByteArray);
@@ -169,27 +159,11 @@ void MainWindow::on_actionAddMany_triggered()
 }
 
 
-
-void MainWindow::slotCurrentPic(QModelIndex index)
-{    
-    currentIndex = index.row();
-    currentFolder = model->data(model->index(index.row(), 1)).toString();
-    emit sendIndextoModel(currentIndex);
-}
-
 //Отображаем фотографию в отдельном окошке
 void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
 {
     Card *cd = new Card(model->data(model->index(index.row(), 3)).toByteArray());
     cd->show();
-}
-
-
-//отображаем ту же папку после удаления
-void MainWindow::delete_row()
-{
-    model->select();
-    model->selectFromTable(currentFolder);
 }
 
 void MainWindow::refresh_folders()
@@ -200,8 +174,6 @@ void MainWindow::refresh_folders()
 
      refreshListFolders();
 }
-
-
 
 void MainWindow::finishWorker()
 {
@@ -219,16 +191,12 @@ void MainWindow::getInfoForCounterFromImgLoader(int num)
     ui->progressBar->setRange(0, num + 1);
 }
 
-
-
 void MainWindow::on_listWidget_clicked(const QModelIndex &)
 {
     currentFolder = ui->listWidget->currentItem()->text();
     model->selectFromTable(currentFolder);
     emit sendFolder(currentFolder);
 }
-
-
 
 void MainWindow::on_actionAddManyByViewer_triggered()
 {
@@ -262,4 +230,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     emit shutdown();
     QWidget::closeEvent(event);
+}
+
+void MainWindow::on_tableView_clicked(const QModelIndex &index)
+{
+    currentIndex = index.row();
+    currentFolder = model->data(model->index(index.row(), 1)).toString();
+    emit sendIndextoModel(currentIndex);
 }

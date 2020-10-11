@@ -6,9 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>872</width>
-    <height>591</height>
+    <width>695</width>
+    <height>625</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>11</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -22,22 +27,21 @@
       </property>
       <widget class="QListWidget" name="listWidget">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>391</width>
-         <height>16777215</height>
-        </size>
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
        </property>
       </widget>
       <widget class="QTableView" name="tableView">
        <property name="font">
         <font>
-         <pointsize>9</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
       </widget>
@@ -62,11 +66,16 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>872</width>
-     <height>21</height>
+     <width>695</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Меню</string>
     </property>
@@ -100,7 +109,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>10</pointsize>
+     <pointsize>11</pointsize>
     </font>
    </property>
   </action>
@@ -115,7 +124,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>10</pointsize>
+     <pointsize>11</pointsize>
     </font>
    </property>
   </action>
@@ -130,7 +139,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>10</pointsize>
+     <pointsize>11</pointsize>
     </font>
    </property>
   </action>

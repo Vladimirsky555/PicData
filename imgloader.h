@@ -4,13 +4,15 @@
 #include <QObject>
 #include <QPixmap>
 
+#include "data_pic.h"
+
 class ImgLoader : public QObject
 {
     Q_OBJECT
 
     QStringList m_fileNameList;
     int m_width;
-    QList<QByteArray> dataList;
+    QList<Data_pic*> dataList;
 
 public:
     bool flag;
@@ -20,7 +22,7 @@ public:
 
     void setFileNameList(QStringList fileNameList);
     void setWidth(int width);
-    void setDataList(QList<QByteArray> arr);
+    void setDataList(QList<Data_pic *> pix);
 
 signals:
     void finished();

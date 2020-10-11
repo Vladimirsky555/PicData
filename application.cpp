@@ -70,9 +70,9 @@ bool Application::createTable()
     QSqlQuery query;
     if(!query.exec( "CREATE TABLE  ScreenTable  ("
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    "Folder   VARCHAR(255)    NOT NULL,"
-                    "Name     VARCHAR(255)    NOT NULL,"
-                    "Pic      BLOB            NOT NULL"
+                    "folder   VARCHAR(255)    NOT NULL,"
+                    "name     VARCHAR(255)    NOT NULL,"
+                    "pic      BLOB            NOT NULL"
                     " )"
                     )){
         qDebug() << "DataBase: error of create " << "ScreenTable";

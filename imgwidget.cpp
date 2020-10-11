@@ -60,10 +60,10 @@ void ImgWidget::setFolder(QString folder)
     this->folder = folder;
 }
 
-void ImgWidget::acceptDataForShow(QList<QByteArray> arr)
+void ImgWidget::acceptDataForShow(QList<Data_pic*> pix)
 {
     ui->btnAddList->setEnabled(false);
-    this->dataForShow = arr;
+    this->dataForShow = pix;
 }
 
 

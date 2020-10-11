@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     worker.cpp \
     imgloader.cpp \
     imgwidget.cpp \
-    addfolder.cpp
+    addfolder.cpp \
+    data_pic.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     worker.h \
     imgloader.h \
     imgwidget.h \
-    addfolder.h
+    addfolder.h \
+    data_pic.h
 
 FORMS    += mainwindow.ui \
     card.ui \

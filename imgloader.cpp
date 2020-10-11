@@ -18,7 +18,7 @@ void ImgLoader::process()
     } else {
         for(int i = 0; i < dataList.count(); i++){
             QPixmap p;
-            if(p.loadFromData(dataList.at(i),"JPG")){
+            if(p.loadFromData(dataList.at(i)->Pic(),"JPG")){
                 emit sendPixmap(p.scaledToWidth(m_width));
             }
         }
@@ -37,7 +37,7 @@ void ImgLoader::setWidth(int width)
     m_width = width;
 }
 
-void ImgLoader::setDataList(QList<QByteArray> arr)
+void ImgLoader::setDataList(QList<Data_pic*> pix)
 {
-    this->dataList = arr;
+    this->dataList = pix;
 }

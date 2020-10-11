@@ -38,14 +38,6 @@ Model::Model(QObject *parent) :
         connect(A, SIGNAL(triggered()), this, SLOT(on_delete_folder()));
         folderActions << A;
     }
-//    {
-//            QAction *A = actSelectAll = new QAction(tr("Вся таблица"), this);
-//            QPixmap p(":/images/showAllTable.png");
-//            A->setIcon(QIcon(p));
-//            actSelectAll->setShortcut(tr("Ctrl+Q"));
-//            connect(A, SIGNAL(triggered()), this, SLOT(on_selectAll()));
-//            folderActions << A;
-//        }
 
 
     //Экшены таблицы
@@ -61,17 +53,9 @@ Model::Model(QObject *parent) :
         QPixmap p(":/images/delPic.png");
         A->setIcon(QIcon(p));
         actDeleteRow->setShortcut(tr("Ctrl+Z"));
-        connect(A, SIGNAL(triggered()), this, SLOT(on_delete_row()));
+        connect(A, SIGNAL(triggered()), this, SLOT(delete_item()));
         allActions << A;
     }
-
-//    {
-//        QAction *A = actRenameFolder = new QAction(this);
-//        A->setText(tr("Переименовать папку"));
-//        connect(A, SIGNAL(triggered()), this, SLOT(on_renameFolder()));
-//        folderActions << A;
-//    }
-
 
     s.loadFolders();
 }
@@ -79,6 +63,12 @@ Model::Model(QObject *parent) :
 Model::~Model()
 {
     s.saveFolders();
+}
+
+Data_pic *Model::getItem(int id)
+{
+    if(id < 0 || id >= pix.size()) return 0;
+    return pix.at(id);
 }
 
 
@@ -91,6 +81,25 @@ void Model::acceptIndexfromView(int id)
 void Model::acceptFolderName(QString folder)
 {
     this->currentFolder = folder;
+}
+
+bool Model::delete_from_db(Data_pic *pic)
+{
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    query.prepare("DELETE FROM ScreenTable WHERE id = :ID ;");
+    query.bindValue(":ID", pic->Id());
+
+    if(!query.exec()){
+        qCritical() << query.lastError().databaseText().toUtf8().data();
+        qCritical() << query.lastError().driverText();
+        qCritical() << query.lastError().nativeErrorCode();
+        return false;
+    } else {
+        qDebug() << "Удалил картинку" + pic->Name();
+        return true;
+    }
+    return false;
 }
 
 void Model::on_addFolder()
@@ -109,26 +118,24 @@ void Model::on_addFolder()
     emit add_folder();
 }
 
-//void Model::on_renameFolder()
-//{
-//    AddFolder d;
-//    d.setFolder(currentFolder);
-//    d.exec();
 
-//    for(int i = 0; i < s.getCount(); i++){
-//        if(s.getFolderById(i)->getName() == currentFolder){
-//            s.getFolderById(i)->setName(d.getFolder());
-//        }
-//    }
-
-//    emit rename_folder();
-//}
-
-
-void Model::on_delete_row()
+void Model::delete_item()
 {
-    removeRow(currentIndex);
-    emit delete_row();
+    Data_pic *pic = getItem(currentIndex);
+    if(!pic)return;
+
+    int n = QMessageBox::warning(0, "Предупреждение", "Неужели удалить эту запись?",
+                                 "Да", "Нет", QString(), 0, 1);
+    if(!n) {
+        beginRemoveRows(QModelIndex(), currentIndex, currentIndex);
+        delete_from_db(pic);//Из базы удаляем
+        pix.removeOne(pic);
+        delete pic;
+        endRemoveRows();
+
+        pix.clear();
+        selectFromTable(currentFolder);
+    }
 }
 
 void Model::on_delete_folder()
@@ -151,12 +158,6 @@ void Model::on_delete_folder()
     select();
     emit delete_folder();
 }
-
-//void Model::on_selectAll()
-//{
-//    select();
-//}
-
 
 void Model::on_show_pic()
 {
@@ -201,9 +202,9 @@ bool Model::selectFromTable(QString folder)
     QString queryText =
             "SELECT                           \n"
             "    id,                          \n"
-            "    Folder,                      \n"
-            "    Name,                        \n"
-            "    Pic                          \n"
+            "    folder,                      \n"
+            "    name,                        \n"
+            "    pic                          \n"
             "FROM ScreenTable                 \n"
             "WHERE Folder = :FOLDER       ;   \n";
 
@@ -218,8 +219,8 @@ bool Model::selectFromTable(QString folder)
         }
 
         while(qry.next()){
-            QByteArray arr = qry.value("Pic").toByteArray();
-            pix.append(arr);
+            Data_pic *pic = new Data_pic(this, qry);
+            pix.append(pic);
         }
 
        setQuery(qry);
@@ -229,19 +230,12 @@ bool Model::selectFromTable(QString folder)
 
 bool Model::insertIntoTable(const QVariantList &data)
 {
-    /* Запрос SQL формируется из QVariantList,
-     * в который передаются данные для вставки в таблицу.
-     * */
     QSqlQuery query;
-    /* В начале SQL запрос формируется с ключами,
-     * которые потом связываются методом bindValue
-     * для подстановки данных из QVariantList
-     * */
-    query.prepare("INSERT INTO ScreenTable (Folder, Name, Pic)"
-                  "VALUES (:Folder, :Name, :Pic)");
-    query.bindValue(":Folder",      data[0].toString());
-    query.bindValue(":Name",        data[1].toString());
-    query.bindValue(":Pic",         data[2].toByteArray());
+    query.prepare("INSERT INTO ScreenTable (folder, name, pic)"
+                  "VALUES (:folder, :name, :pic)");
+    query.bindValue(":folder",      data[0].toString());
+    query.bindValue(":name",        data[1].toString());
+    query.bindValue(":pic",         data[2].toByteArray());
 
     // После чего выполняется запросом методом exec()
     if(!query.exec()){
@@ -268,27 +262,26 @@ bool Model::insertIntoTable(const QString &folder, const QString &name, const QB
         return false;
 }
 
-bool Model::removeRecord(const int id)
-{
-    QSqlQuery query;
-        query.prepare("DELETE FROM ScreenTable "
-                      "WHERE id= :ID ;");
-        query.bindValue(":ID", id);
-        if(!query.exec()){
-            qDebug() << "error delete row " << "ScreenTable";
-            qDebug() << query.lastError().text();
-            return false;
-        } else {
-            return true;
-        }
-        return false;
-}
+//bool Model::removeRecord(const int id)
+//{
+//    QSqlQuery query;
+//        query.prepare("DELETE FROM ScreenTable "
+//                      "WHERE id= :ID ;");
+//        query.bindValue(":ID", id);
+//        if(!query.exec()){
+//            qDebug() << "error delete row " << "ScreenTable";
+//            qDebug() << query.lastError().text();
+//            return false;
+//        } else {
+//            return true;
+//        }
+//        return false;
+//}
 
 bool Model::removeRecords(QString folder)
 {
     QSqlQuery query;
-        query.prepare("DELETE FROM ScreenTable "
-                      "WHERE Folder = :FOLDER ;");
+        query.prepare("DELETE FROM ScreenTable WHERE Folder = :FOLDER ;");
         query.bindValue(":FOLDER", folder);
         if(!query.exec()){
             qDebug() << "error delete row " << "ScreenTable";

@@ -10,6 +10,8 @@
 #include <QDate>
 #include <QDebug>
 
+#include "data_pic.h"
+
 class QAction;
 
 
@@ -54,7 +56,7 @@ class Model : public QSqlTableModel
 {
     Q_OBJECT
 
-    QList<QByteArray> pix;
+    QList<Data_pic*> pix;
     QString currentFolder;
 
 public:
@@ -76,16 +78,14 @@ public:
     QList<QAction*> folderActions;
     QAction *actDeleteFolder;
     QAction *actOpenViewer;
-//    QAction *actSelectAll;
     QAction *actAddFolder;
     QAction *actRenameFolder;
 
 public:
-    //Функции базы данных
+    Data_pic *getItem(int id);
     void connectToDataBase();
     bool insertIntoTable(const QVariantList &data);      // Добавление записей в таблицу
     bool insertIntoTable(const QString &folder, const QString &name, const QByteArray &pic);
-    bool removeRecord(const int id);
     bool removeRecords(QString folder);
     bool selectFromTable(QString folder);
 
@@ -94,12 +94,13 @@ public slots:
     void acceptIndexfromView(int id);
     void acceptFolderName(QString);
 
+private slots:
+    bool delete_from_db(Data_pic* pic);
+
 
 protected slots:
     void on_addFolder();
-//    void on_renameFolder();
-//    void on_selectAll();
-    void on_delete_row();
+    void delete_item();
     void on_delete_folder();
     void on_show_pic();
     void on_show_viewer();
@@ -108,13 +109,10 @@ protected slots:
 signals:
     void add_folder();
     void delete_folder();
-    void delete_row();
-    void rename_folder();
     void shutdown();
 
 
 
 };
-/************************************************/
 
-#endif // MODEL_H
+#endif
