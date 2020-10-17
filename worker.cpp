@@ -10,6 +10,10 @@ Worker::Worker(QObject *parent) :
 
 }
 
+Worker::~Worker()
+{
+}
+
 void Worker::setFolder(QString folder)
 {
     this->Folder = folder;
@@ -45,7 +49,7 @@ void Worker::addManyPictures()
     }
 
     model->selectFromTable(Folder);
-    emit workFinished();
+    emit workFinished(Folder);
 }
 
 void Worker::run()

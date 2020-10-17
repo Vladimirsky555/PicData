@@ -46,7 +46,7 @@ private slots:
 //    void slotCurrentPic(QModelIndex index);
     void on_tableView_doubleClicked(const QModelIndex &index);
 
-    void finishWorker();//Слот для worker
+    void finishWorker(QString dir);//Слот для worker
     void acceptInfoForCounter(int);
     void getInfoForCounterFromImgLoader(int);
     void on_actionAddManyByViewer_triggered();

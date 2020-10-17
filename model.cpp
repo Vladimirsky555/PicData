@@ -118,6 +118,25 @@ void Model::on_addFolder()
     emit add_folder();
 }
 
+void Model::addFolders(QStringList folders)
+{
+    for(int i = 0; i < folders.count(); i++){
+        if(folders.at(i) != "")
+        s.addFolder(folders.at(i));
+    }
+}
+
+void Model::addFolder(QString folder)
+{
+    if(folder != ""){
+        s.addFolder(folder);
+    } else {
+        return;
+    }
+
+    emit add_folder();
+}
+
 
 void Model::delete_item()
 {

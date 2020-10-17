@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     worker->setModel(model);
     connect(worker, SIGNAL(workFinished()),
             this, SLOT(finishWorker()));
-
     connect(worker, SIGNAL(sendToCounter(int)),
             this, SLOT(acceptInfoForCounter(int)));
 
@@ -137,30 +136,56 @@ void MainWindow::on_actionAddOne_triggered()
 
 void MainWindow::on_actionAddMany_triggered()
 {
-    if(currentFolder == ""){
-        QMessageBox::information(this, "Информация", "Добавьте название папки!");
-        return;
-    }
-
-    QStringList filePathes;
-    QStringList fileNames;
+    //Поиск папок в корневой папке
+    QStringList dirPathes;
+    QStringList dirNames;
     QDir mDir(QFileDialog::getExistingDirectory(this, "Выбор папки", ""));
 
     for(QFileInfo tmp : mDir.entryInfoList())
     {
-        filePathes.append(tmp.filePath());
-        fileNames.append(tmp.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+        if(tmp.fileName() != ".."){
+            if(tmp.fileName() != "."){
+                dirPathes.append(tmp.filePath());
+                dirNames.append(tmp.fileName());
+            }
+        }
     }
 
-    ui->progressBar->setRange(0, filePathes.count());
+    //Поиск фотографий в дочерних папках
+    QStringList filePathes;
+    QStringList fileNames;
 
-    if(worker->isRunning()){
-        worker->terminate();
-    } else {
-        worker->setFilePathList(filePathes);
-        worker->setFileNameList(fileNames);
-        worker->setFolder(currentFolder);
-        worker->start();
+    for(int i = 0; i < dirPathes.count(); i++){
+        model->addFolder(dirNames.at(i));
+        QDir fDir(dirPathes.at(i));
+        fileNames.clear();
+        filePathes.clear();
+
+        for(QFileInfo tmp : fDir.entryInfoList())
+        {
+            if(tmp.fileName() != ".."){
+                if(tmp.fileName() != "."){
+                    filePathes.append(tmp.filePath());
+                    fileNames.append(tmp.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+                }
+            }
+        }
+
+//        ui->progressBar->setRange(0, dirPathes.count());
+
+        Worker *w = new Worker(this);
+        w->setModel(model);
+        connect(w, SIGNAL(workFinished(QString)),
+                this, SLOT(finishWorker(QString)));
+
+        if(w->isRunning()){
+            w->terminate();
+        } else {
+            w->setFilePathList(filePathes);
+            w->setFileNameList(fileNames);
+            w->setFolder(dirNames.at(i));
+            w->start();
+        }
     }
 }
 
@@ -181,9 +206,9 @@ void MainWindow::refresh_folders()
      refreshListFolders();
 }
 
-void MainWindow::finishWorker()
+void MainWindow::finishWorker(QString dir)
 {
-    QMessageBox::information(this, "Информация", "Фотографии загружены");
+    QMessageBox::information(this, "Информация", "Папка \""+ dir + "\" загружена");
     ui->progressBar->setValue(0);
 }
 

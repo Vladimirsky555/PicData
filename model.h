@@ -89,6 +89,8 @@ public:
     bool removeRecords(QString folder);
     bool selectFromTable(QString folder);
 
+    void addFolders(QStringList folders);
+   void addFolder(QString folder);
 
 public slots:
     void acceptIndexfromView(int id);
@@ -96,7 +98,6 @@ public slots:
 
 private slots:
     bool delete_from_db(Data_pic* pic);
-
 
 protected slots:
     void on_addFolder();

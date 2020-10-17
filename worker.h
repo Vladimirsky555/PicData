@@ -22,7 +22,7 @@ class Worker : public QThread
 
 public:
     Worker(QObject *parent = 0);
-    virtual ~Worker(){}
+    virtual ~Worker();
 
     void setFolder(QString folder);
     void setFilePathList(QStringList filePathes);
@@ -33,7 +33,7 @@ public:
 
 
 signals:
-    void workFinished();
+    void workFinished(QString);
     void sendToCounter(int);
 
     // QThread interface
