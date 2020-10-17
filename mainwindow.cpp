@@ -118,16 +118,18 @@ void MainWindow::on_actionAddOne_triggered()
         return;
     }
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
-                                                    tr("Images (*.png *.xpm *.jpg)"));
-    QPixmap inixmap(fileName);
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),tr("Images (*.png *.xpm *.jpg)"));
+    QFile f(filePath);
+    QFileInfo fileInfo(f.fileName());
+    QString fileName(fileInfo.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+
+    QPixmap inixmap(filePath);
     QByteArray inByteArray;
     QBuffer inBuffer(&inByteArray);
     inBuffer.open(QIODevice::WriteOnly);
     inixmap.save(&inBuffer, "JPG");
-    model->insertIntoTable(currentFolder,
-                       QDateTime::currentDateTime().toString("dd.MM.yyyy_hh:mm:ss.jpg"),
-                       inByteArray);
+
+    model->insertIntoTable(currentFolder,fileName,inByteArray);
     model->selectFromTable(currentFolder);
 }
 
@@ -140,19 +142,23 @@ void MainWindow::on_actionAddMany_triggered()
         return;
     }
 
-    QStringList filenames =
-    QFileDialog::getOpenFileNames(this,
-                                  tr("JPG files"),
-                                  QDir::currentPath(),
-                                  tr("Bitmap files (*.jpg);;All files (*.*)") );
+    QStringList filePathes;
+    QStringList fileNames;
+    QDir mDir(QFileDialog::getExistingDirectory(this, "Выбор папки", ""));
 
+    for(QFileInfo tmp : mDir.entryInfoList())
+    {
+        filePathes.append(tmp.filePath());
+        fileNames.append(tmp.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+    }
 
-    ui->progressBar->setRange(0, filenames.count());
+    ui->progressBar->setRange(0, filePathes.count());
 
     if(worker->isRunning()){
         worker->terminate();
     } else {
-        worker->setFilenamesList(filenames);
+        worker->setFilePathList(filePathes);
+        worker->setFileNameList(fileNames);
         worker->setFolder(currentFolder);
         worker->start();
     }

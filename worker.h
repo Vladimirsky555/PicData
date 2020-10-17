@@ -15,7 +15,8 @@ class Worker : public QThread
     Q_OBJECT
 
     QString Folder;
-    QStringList filenameList;
+    QStringList filePathList;
+    QStringList fileNameList;
     Model *model;
 
 
@@ -24,7 +25,8 @@ public:
     virtual ~Worker(){}
 
     void setFolder(QString folder);
-    void setFilenamesList(QStringList filenames);
+    void setFilePathList(QStringList filePathes);
+    void setFileNameList(QStringList fileNames);
     void setModel(Model *model);
 
     void addManyPictures();

@@ -24,6 +24,7 @@ class ImgWidget : public QWidget
     ImgLoader *imgLoader;
     QList<Data_pic*> dataForShow;
     QList<QWidget*> widgets;
+    QStringList filePathList;
     QStringList fileNameList;
     Worker *worker;
     QString folder;

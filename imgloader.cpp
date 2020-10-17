@@ -7,10 +7,25 @@ ImgLoader::ImgLoader(QObject *parent) :
    this->flag = false;
 }
 
+void ImgLoader::setFilePathList(QStringList filePathList)
+{
+    m_filePathList = filePathList;
+}
+
+void ImgLoader::setWidth(int width)
+{
+    m_width = width;
+}
+
+void ImgLoader::setDataList(QList<Data_pic*> pix)
+{
+    this->dataList = pix;
+}
+
 void ImgLoader::process()
 {
     if(!flag){
-        for (QString fileName : m_fileNameList)
+        for (QString fileName : m_filePathList)
         {
             QPixmap pix(fileName);
             emit sendPixmap(pix.scaledToWidth(m_width));
@@ -27,17 +42,4 @@ void ImgLoader::process()
     emit finished();
 }
 
-void ImgLoader::setFileNameList(QStringList fileNameList)
-{
-    m_fileNameList = fileNameList;
-}
 
-void ImgLoader::setWidth(int width)
-{
-    m_width = width;
-}
-
-void ImgLoader::setDataList(QList<Data_pic*> pix)
-{
-    this->dataList = pix;
-}

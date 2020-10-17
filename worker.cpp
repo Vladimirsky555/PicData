@@ -15,11 +15,15 @@ void Worker::setFolder(QString folder)
     this->Folder = folder;
 }
 
-void Worker::setFilenamesList(QStringList filenames)
+void Worker::setFilePathList(QStringList filePathes)
 {
-   this->filenameList = filenames;
+    this->filePathList = filePathes;
 }
 
+void Worker::setFileNameList(QStringList fileNames)
+{
+    this->fileNameList = fileNames;
+}
 
 void Worker::setModel(Model *model)
 {
@@ -28,18 +32,15 @@ void Worker::setModel(Model *model)
 
 void Worker::addManyPictures()
 {
-    if(!filenameList.isEmpty() ){
-        for (int i =0;i<filenameList.count();i++){
+    if(!filePathList.isEmpty() ){
+        for (int i =0; i<filePathList.count(); i++){
             emit(sendToCounter(i+1));
-            QPixmap inixmap(filenameList.at(i));
+            QPixmap inixmap(filePathList.at(i));
             QByteArray inByteArray;
             QBuffer inBuffer(&inByteArray);
             inBuffer.open(QIODevice::WriteOnly);
             inixmap.save(&inBuffer, "JPG");
-            model->insertIntoTable(Folder,
-                                   Folder + "_" + QString::number(i),
-                                   inByteArray);
-//            model->selectFromTable(Folder);
+            model->insertIntoTable(Folder,fileNameList.at(i),inByteArray);
         }
     }
 

@@ -262,21 +262,6 @@ bool Model::insertIntoTable(const QString &folder, const QString &name, const QB
         return false;
 }
 
-//bool Model::removeRecord(const int id)
-//{
-//    QSqlQuery query;
-//        query.prepare("DELETE FROM ScreenTable "
-//                      "WHERE id= :ID ;");
-//        query.bindValue(":ID", id);
-//        if(!query.exec()){
-//            qDebug() << "error delete row " << "ScreenTable";
-//            qDebug() << query.lastError().text();
-//            return false;
-//        } else {
-//            return true;
-//        }
-//        return false;
-//}
 
 bool Model::removeRecords(QString folder)
 {

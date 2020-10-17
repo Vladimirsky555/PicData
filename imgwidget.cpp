@@ -90,19 +90,24 @@ void ImgWidget::closeWidget()
 //Просматриваем из файловой системы
 void ImgWidget::on_btnAddList_clicked()
 {
-    fileNameList.clear();
+    filePathList.clear();
     //При просмотре из файловой системы, открываем возможность добавлять в базу
     ui->btnAddToDB->setEnabled(true);
 
 
     imgLoader->flag = false;
-    fileNameList = QFileDialog::getOpenFileNames(this, tr("JPG files"),
-                                                 QDir::currentPath(),
-                                                 tr("Bitmap files (*.jpg);;All files (*.*)") );
+
+    QDir mDir(QFileDialog::getExistingDirectory(this, "Выбор папки", ""));
+
+    for(QFileInfo tmp : mDir.entryInfoList())
+    {
+        filePathList.append(tmp.filePath());
+        fileNameList.append(tmp.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+    }
 
     int imageWidth = ui->scrollArea->width() - 30;
 
-    imgLoader->setFileNameList(fileNameList);
+    imgLoader->setFilePathList(filePathList);
     imgLoader->setWidth(imageWidth);
     imgLoader->moveToThread(&m_thread);
 
@@ -115,8 +120,9 @@ void ImgWidget::on_btnAddToDB_clicked()
     if(worker->isRunning()){
         worker->terminate();
     } else {
-        emit infoForProgressBar(fileNameList.count());
-        worker->setFilenamesList(fileNameList);
+        emit infoForProgressBar(filePathList.count());
+        worker->setFilePathList(filePathList);
+        worker->setFileNameList(fileNameList);
         worker->setFolder(folder);
         worker->start();
     }

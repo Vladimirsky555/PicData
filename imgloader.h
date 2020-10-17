@@ -10,7 +10,7 @@ class ImgLoader : public QObject
 {
     Q_OBJECT
 
-    QStringList m_fileNameList;
+    QStringList m_filePathList;
     int m_width;
     QList<Data_pic*> dataList;
 
@@ -20,7 +20,7 @@ public:
 public:
     explicit ImgLoader(QObject *parent = 0);
 
-    void setFileNameList(QStringList fileNameList);
+    void setFilePathList(QStringList filePathList);
     void setWidth(int width);
     void setDataList(QList<Data_pic *> pix);
 
