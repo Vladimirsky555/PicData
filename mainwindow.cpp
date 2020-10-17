@@ -33,8 +33,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     worker = new Worker(this);
     worker->setModel(model);
-    connect(worker, SIGNAL(workFinished()),
-            this, SLOT(finishWorker()));
+    connect(worker, SIGNAL(workFinished(QString)),
+            this, SLOT(finishWorker(QString)));
     connect(worker, SIGNAL(sendToCounter(int)),
             this, SLOT(acceptInfoForCounter(int)));
 
@@ -170,8 +170,6 @@ void MainWindow::on_actionAddMany_triggered()
                 }
             }
         }
-
-//        ui->progressBar->setRange(0, dirPathes.count());
 
         Worker *w = new Worker(this);
         w->setModel(model);

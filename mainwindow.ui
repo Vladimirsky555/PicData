@@ -67,7 +67,7 @@
      <x>0</x>
      <y>0</y>
      <width>695</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -120,7 +120,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Добавить много фотографий</string>
+    <string>Добавить папки из директории</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить папки из директории</string>
    </property>
    <property name="font">
     <font>
@@ -135,7 +138,10 @@
     </iconset>
    </property>
    <property name="text">
-    <string>Добавить через просмотрщик</string>
+    <string>Добавить через просмотрщик одну папку</string>
+   </property>
+   <property name="toolTip">
+    <string>Добавить через просмотрщик (одну папку)</string>
    </property>
    <property name="font">
     <font>

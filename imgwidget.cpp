@@ -6,6 +6,7 @@
 #include <QStandardPaths>
 #include <QScrollBar>
 #include <QLabel>
+#include <QDesktopWidget>
 #include <QMessageBox>
 
 
@@ -37,6 +38,10 @@ ImgWidget::ImgWidget(QWidget *parent) :
 
     connect(imgLoader, SIGNAL(sendPixmap(QPixmap)),
             this, SLOT(addImageLabel(QPixmap)));
+
+
+    const auto screenSize = size();
+    move(screenSize.width()/2 - 200, screenSize.height()/2 - size().height()/2);
 
 }
 
@@ -101,8 +106,12 @@ void ImgWidget::on_btnAddList_clicked()
 
     for(QFileInfo tmp : mDir.entryInfoList())
     {
-        filePathList.append(tmp.filePath());
-        fileNameList.append(tmp.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+        if(tmp.fileName() != ".."){
+            if(tmp.fileName() != "."){
+                filePathList.append(tmp.filePath());
+                fileNameList.append(tmp.fileName().remove(QRegularExpression(".(jpg|JPG|png|jpeg|bmp|ico)")));
+            }
+        }
     }
 
     int imageWidth = ui->scrollArea->width() - 30;

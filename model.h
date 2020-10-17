@@ -88,9 +88,7 @@ public:
     bool insertIntoTable(const QString &folder, const QString &name, const QByteArray &pic);
     bool removeRecords(QString folder);
     bool selectFromTable(QString folder);
-
-    void addFolders(QStringList folders);
-   void addFolder(QString folder);
+    void addFolder(QString folder);
 
 public slots:
     void acceptIndexfromView(int id);
@@ -111,8 +109,6 @@ signals:
     void add_folder();
     void delete_folder();
     void shutdown();
-
-
 
 };
 

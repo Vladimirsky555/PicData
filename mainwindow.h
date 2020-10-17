@@ -43,14 +43,11 @@ private slots:
     void refresh_folders();//слот оновления, когда удаляем через экшен модели
 
     //Реакция на представлении
-//    void slotCurrentPic(QModelIndex index);
     void on_tableView_doubleClicked(const QModelIndex &index);
-
     void finishWorker(QString dir);//Слот для worker
     void acceptInfoForCounter(int);
     void getInfoForCounterFromImgLoader(int);
     void on_actionAddManyByViewer_triggered();
-
     void on_tableView_clicked(const QModelIndex &index);
 
 signals:
