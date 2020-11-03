@@ -7,6 +7,9 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QSqlQuery>
+#include <QThread>
+#include <QThreadPool>
+#include <QMutex>
 
 #include "imgwidget.h"
 
@@ -151,6 +154,9 @@ void MainWindow::on_actionAddMany_triggered()
         }
     }
 
+    QMutex mutex(QMutex::Recursive);
+    QThreadPool *pool = QThreadPool::globalInstance();
+
     //Поиск фотографий в дочерних папках
     QStringList filePathes;
     QStringList fileNames;
@@ -171,20 +177,17 @@ void MainWindow::on_actionAddMany_triggered()
             }
         }
 
-        Worker *w = new Worker(this);
+        Worker *w = new Worker(NULL, &mutex);
+        connect(w, SIGNAL(workFinished(QString)),this, SLOT(finishWorker(QString)));
+        w->setAutoDelete(true);
         w->setModel(model);
-        connect(w, SIGNAL(workFinished(QString)),
-                this, SLOT(finishWorker(QString)));
-
-        if(w->isRunning()){
-            w->terminate();
-        } else {
-            w->setFilePathList(filePathes);
-            w->setFileNameList(fileNames);
-            w->setFolder(dirNames.at(i));
-            w->start();
-        }
+        w->setFilePathList(filePathes);
+        w->setFileNameList(fileNames);
+        w->setFolder(dirNames.at(i));
+        pool->start(w);
     }
+
+    pool->waitForDone();
 }
 
 
@@ -243,7 +246,7 @@ void MainWindow::on_actionAddManyByViewer_triggered()
     connect(this, SIGNAL(closeImgWidget()),\
             img, SLOT(closeWidget()));
 
-    connect(worker, SIGNAL(started()),
+    connect(worker, SIGNAL(closeWidget()),
             img, SLOT(closeWidget()));
 
     connect(img, SIGNAL(infoForProgressBar(int)),

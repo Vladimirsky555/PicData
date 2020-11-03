@@ -127,6 +127,7 @@ void Model::addFolder(QString folder)
         return;
     }
 
+    s.saveFolders();
     emit add_folder();
 }
 

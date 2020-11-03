@@ -25,7 +25,6 @@ void AddFolder::setFolder(QString folder)
 
 QString AddFolder::getFolder()
 {
-
     return this->folder;
 }
 

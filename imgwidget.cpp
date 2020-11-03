@@ -126,15 +126,12 @@ void ImgWidget::on_btnAddList_clicked()
 //Добавляем в базу данных
 void ImgWidget::on_btnAddToDB_clicked()
 {
-    if(worker->isRunning()){
-        worker->terminate();
-    } else {
-        emit infoForProgressBar(filePathList.count());
-        worker->setFilePathList(filePathList);
-        worker->setFileNameList(fileNameList);
-        worker->setFolder(folder);
-        worker->start();
-    }
+    emit infoForProgressBar(filePathList.count());
+
+    worker->setFilePathList(filePathList);
+    worker->setFileNameList(fileNameList);
+    worker->setFolder(folder);
+    worker->run();
 }
 
 void ImgWidget::shutdown()

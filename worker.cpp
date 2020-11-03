@@ -4,15 +4,12 @@
 #include <QBuffer>
 #include <QMessageBox>
 
-Worker::Worker(QObject *parent) :
-    QThread(parent)
+Worker::Worker(QObject *parent, QMutex *mutex) :
+    QObject(parent), QRunnable ()
 {
-
+    this->mutex = mutex;
 }
 
-Worker::~Worker()
-{
-}
 
 void Worker::setFolder(QString folder)
 {
@@ -36,8 +33,10 @@ void Worker::setModel(Model *model)
 
 void Worker::addManyPictures()
 {
+    emit closeWidget();//При добавлении через виджет, для закрытия виджета после добавления
     if(!filePathList.isEmpty() ){
         for (int i =0; i<filePathList.count(); i++){
+            QMutexLocker locker(mutex);
             emit(sendToCounter(i+1));
             QPixmap inixmap(filePathList.at(i));
             QByteArray inByteArray;
@@ -46,13 +45,15 @@ void Worker::addManyPictures()
             inixmap.save(&inBuffer, "JPG");
             model->insertIntoTable(Folder,fileNameList.at(i),inByteArray);
         }
-    }
 
-    model->selectFromTable(Folder);
-    emit workFinished(Folder);
+        model->selectFromTable(Folder);
+//        emit workFinished(Folder);
+    }
 }
 
 void Worker::run()
 {
+    qInfo() << "Starting: " << QThread::currentThread();
     addManyPictures();
+    qInfo() << "Finished: " << QThread::currentThread();
 }

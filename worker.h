@@ -7,10 +7,11 @@
 #include <QDir>
 #include <QDateTime>
 #include <QDebug>
+#include <QMutex>
 
 #include "model.h"
 
-class Worker : public QThread
+class Worker : public QObject, public QRunnable
 {
     Q_OBJECT
 
@@ -19,25 +20,26 @@ class Worker : public QThread
     QStringList fileNameList;
     Model *model;
 
+public:
+    QMutex *mutex;
 
 public:
-    Worker(QObject *parent = 0);
-    virtual ~Worker();
+    Worker(QObject *parent, QMutex* mutex = nullptr);
+    virtual ~Worker(){}
 
     void setFolder(QString folder);
     void setFilePathList(QStringList filePathes);
     void setFileNameList(QStringList fileNames);
     void setModel(Model *model);
-
     void addManyPictures();
-
 
 signals:
     void workFinished(QString);
     void sendToCounter(int);
+    void closeWidget();
 
-    // QThread interface
-protected:
+    // QRunnable interface
+public:
     virtual void run();
 };
 

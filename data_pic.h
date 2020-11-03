@@ -29,10 +29,6 @@ public:
 
     QString Folder();
     void setFolder(QString folder);
-
-signals:
-
-public slots:
 };
 
 #endif // DATA_PIC_H
